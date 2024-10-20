@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HalaStats_Core\HalaStats_Core.csproj" />
+    <ProjectReference Include="..\HalaStats_Core\HalaStats_BE.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
