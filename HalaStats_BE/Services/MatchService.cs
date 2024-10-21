@@ -3,15 +3,18 @@ using HalaStats_BE.Database;
 using HalaStats_BE.Database.Entities;
 using HalaStats_BE.Database.ValueObjects;
 using HalaStats_BE.Dtos.Requests;
+using HalaStats_BE.Dtos.Responses;
 using HalaStats_Core.Models.Requests;
 using HalaStats_Core.Models.Responses;
 using HalaStats_Core.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace HalaStats_BE.Services
 {
     public interface IMatchService
     {
-        //MatchResultResponseDto CalculatePlayersRatings(MatchResultDto matchResult);
+        Task<List<MatchResultResponseDto>> GetMatchesHistory(MatchResultDto matchResult);
+
         Task CalculatePlayersRatings(MatchResultDto matchResult);
     }
 
@@ -24,6 +27,38 @@ namespace HalaStats_BE.Services
         {
             _eloRatingService = eloRatingService;
             _halaStatsDbContext = halaStatsDbContext;
+        }
+
+        public async Task<List<MatchResultResponseDto>> GetMatchesHistory(MatchResultDto matchResult)
+        {
+            var result = await _halaStatsDbContext.Matches.Select(m => new MatchResultResponseDto
+            {
+                TeamA = new TeamResultResponseDto
+                {
+                    Goals = m.TeamA.Goals,
+                    Players = m.TeamA.Players.Select(p => new PlayerResponseDto
+                    {
+                        Id = p.PlayerId,
+                        NewRating = p.Rating,
+                        Difference = p.Difference
+                    }).ToList()
+                },
+                TeamB = new TeamResultResponseDto
+                {
+                    Goals = m.TeamB.Goals,
+                    Players = m.TeamB.Players.Select(p => new PlayerResponseDto
+                    {
+                        Id = p.PlayerId,
+                        NewRating = p.Rating,
+                        Difference = p.Difference
+                    }).ToList()
+                },
+                EventLink = m.EventLink,
+                MatchDate = m.MatchDate,
+                Skarbnik = m.SkarbnikId
+            }).ToListAsync();
+
+            return result;
         }
 
         //TODO: Calculate nie powinno zwracać wyniki (tylko być Postem bezwynikowym) wynik zwracać GETem

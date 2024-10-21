@@ -9,6 +9,7 @@ namespace HalaStats_BE.Database
     {
         DbSet<MatchEntity> Matches { get; set; }
         DbSet<PlayerEntity> Players { get; set; }
+        DbSet<MatchScheduleEntity> MatchSchedules { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
@@ -17,6 +18,7 @@ namespace HalaStats_BE.Database
     {
         public DbSet<MatchEntity> Matches { get; set; }
         public DbSet<PlayerEntity> Players { get; set; }
+        public DbSet<MatchScheduleEntity> MatchSchedules { get; set; }
 
         public HalaStatsDbContext()
         {
