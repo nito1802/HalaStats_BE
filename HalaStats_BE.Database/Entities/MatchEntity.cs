@@ -9,6 +9,6 @@ namespace HalaStats_BE.Database.Entities
         public string EventLink { get; set; }
         public MatchTeamValueObject TeamA { get; set; }
         public MatchTeamValueObject TeamB { get; set; }
-        public PlayerEntity? Skarbnik { get; set; }
+        public string SkarbnikId { get; set; }
     }
 }

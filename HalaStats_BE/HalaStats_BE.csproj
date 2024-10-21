@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HalaStats_BE.Database\HalaStats_BE.Database.csproj" />
     <ProjectReference Include="..\HalaStats_Core\HalaStats_BE.Core.csproj" />
   </ItemGroup>
 

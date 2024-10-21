@@ -1,49 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using HalaStats_BE.Database.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HalaStats_BE.Database.Entities;
 
 namespace HalaStats_BE.Database
 {
     public interface IHalaStatsDbContext
     {
-        /*
-        DbSet<ExcerciseEntity> Excercises { get; set; }
-        DbSet<ExcerciseTypeEntity> ExcerciseTypes { get; set; }
-        DbSet<GoogleDriveImageEntity> GoogleDriveImages { get; set; }
-        DbSet<LanguageEntity> Languages { get; set; }
-        DbSet<SentenceEntity> Sentences { get; set; }
-        DbSet<PhraseEntity> Phrases { get; set; }
-        DbSet<PriorityEntity> Priorities { get; set; }
-        DbSet<TagEntity> Tags { get; set; }
-        DbSet<StatEntity> Stats { get; set; }
-        DbSet<SendMethodEntity> SendMethods { get; set; }
-        DbSet<LogEntity> Logs { get; set; }
-        */
+        DbSet<MatchEntity> Matches { get; set; }
+        DbSet<PlayerEntity> Players { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 
     public class HalaStatsDbContext : DbContext, IHalaStatsDbContext
     {
-        /*
-        public DbSet<ExcerciseEntity> Excercises { get; set; }
-        public DbSet<ExcerciseTypeEntity> ExcerciseTypes { get; set; }
-        public DbSet<GoogleDriveImageEntity> GoogleDriveImages { get; set; }
-        public DbSet<LanguageEntity> Languages { get; set; }
-        public DbSet<SentenceEntity> Sentences { get; set; }
-        public DbSet<PhraseEntity> Phrases { get; set; }
-        public DbSet<PriorityEntity> Priorities { get; set; }
-        public DbSet<TagEntity> Tags { get; set; }
-        public DbSet<StatEntity> Stats { get; set; }
-        public DbSet<SendMethodEntity> SendMethods { get; set; }
-        public DbSet<LogEntity> Logs { get; set; }
-        */
+        public DbSet<MatchEntity> Matches { get; set; }
+        public DbSet<PlayerEntity> Players { get; set; }
 
         public HalaStatsDbContext()
         {
@@ -57,14 +30,35 @@ namespace HalaStats_BE.Database
         {
             modelBuilder.HasDefaultSchema("HalaStats");
 
+            // Konfiguracja dla TeamA
+            modelBuilder.Entity<MatchEntity>(entity =>
+            {
+                entity.OwnsOne(e => e.TeamA, teamA =>
+                {
+                    teamA.OwnsMany(t => t.Players, p =>
+                    {
+                        p.WithOwner().HasForeignKey("TeamA_MatchId"); // Klucz obcy do MatchEntity
+                        p.ToTable("Matches_TeamA_Players");  // Osobna tabela dla graczy TeamA
+                    });
+                });
+            });
+
+            // Konfiguracja dla TeamB
+            modelBuilder.Entity<MatchEntity>(entity =>
+            {
+                entity.OwnsOne(e => e.TeamB, teamB =>
+                {
+                    teamB.OwnsMany(t => t.Players, p =>
+                    {
+                        p.WithOwner().HasForeignKey("TeamB_MatchId"); // Klucz obcy do MatchEntity
+                        p.ToTable("Matches_TeamB_Players");  // Osobna tabela dla graczy TeamB
+                    });
+                });
+            });
+
             base.OnModelCreating(modelBuilder);
 
             /*
-            // Konfiguracja wartości obiektowej
-            modelBuilder.Entity<ExcerciseEntity>(entity =>
-            {
-                entity.OwnsOne(e => e.ExcerciseResult);
-            });
 
             // Relacja wiele-do-jeden między PhraseEntity a LanguageEntity
             modelBuilder.Entity<SentenceEntity>()
