@@ -6,7 +6,6 @@ namespace HalaStats_UnitTests.Core.Services
 {
     public class EloRatingServiceTests
     {
-        // Test dla funkcji Add z wieloma zestawami danych
         [Theory]
         [InlineData(1500, 1500, 2, 1, 1525)]
         [InlineData(1500, 1500, 1, 2, 1475)]
@@ -44,12 +43,5 @@ namespace HalaStats_UnitTests.Core.Services
             result.NewRating.Should().Be(expectedRatingNewPlayer);
             result.Difference.Should().Be(expectedRatingNewPlayer - ratingPlayer);
         }
-
-        /*
-          new EloRatingService().UpdateRatings(1500, 1500, 2, 1);
-            new EloRatingService().UpdateRatings(1500, 1500, 4, 1);
-            new EloRatingService().UpdateRatings(1500, 1500, 6, 1);
-            new EloRatingService().UpdateRatings(1500, 1500, 20, 1);
-         */
     }
 }
