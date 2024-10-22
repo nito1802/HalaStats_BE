@@ -49,7 +49,7 @@ namespace HalaStats_BE.Services
                 {
                     Goals = m.TeamB.Goals,
                     TeamRating = m.TeamB.TeamRating,
-                    TeamName = m.TeamA.TeamName,
+                    TeamName = m.TeamB.TeamName,
                     Players = m.TeamB.Players.Select(p => new PlayerResponseDto
                     {
                         Id = p.PlayerId,
