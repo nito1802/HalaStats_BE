@@ -1,4 +1,5 @@
-﻿using HalaStats_BE.Services;
+﻿using HalaStats_BE.Dtos.Requests;
+using HalaStats_BE.Services;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,30 @@ namespace HalaStats_BE.Controllers
         {
             await _matchScheduleService.SeedSchedule();
             return Ok();
+        }
+
+        [HttpPost]
+        [Route("set-status")]
+        public async Task<IActionResult> SetMatchStatus(MatchScheduleStatusDto matchScheduleStatusDto)
+        {
+            await _matchScheduleService.SetMatchStatus(matchScheduleStatusDto);
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("matches-schedule")]
+        public async Task<IActionResult> GetMatchesSchedule()
+        {
+            var result = await _matchScheduleService.GetMatchesSchedule();
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("next-match")]
+        public async Task<IActionResult> GetNextMatch()
+        {
+            var result = await _matchScheduleService.GetNextMatch();
+            return Ok(result);
         }
     }
 }

@@ -4,10 +4,10 @@ namespace HalaStats_BE.Database.Entities
 {
     public enum EventState
     {
-        Scheduled,
-        Confirmed,
-        Finished,
-        Cancelled
+        Scheduled = 0,
+        Confirmed = 1,
+        Finished = 2,
+        Cancelled = 3
     }
 
     public class MatchScheduleEntity : AuditableEntity
