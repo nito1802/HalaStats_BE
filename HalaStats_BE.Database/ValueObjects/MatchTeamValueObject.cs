@@ -6,7 +6,7 @@
         public int Goals { get; set; }
         public int TeamRating { get; set; }
         public int Handicup { get; set; }
-        public string HandicupReason { get; set; }
+        public string? HandicupReason { get; set; }
         public List<PlayerValueObject> Players { get; set; }
     }
 }

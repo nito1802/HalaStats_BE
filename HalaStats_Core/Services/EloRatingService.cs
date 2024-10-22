@@ -29,7 +29,7 @@ namespace HalaStats_Core.Services
                 return 1.5;
             else if (goalDifference < 10)
                 return 2;
-            return 3.0;
+            return 2.7;
         }
 
         // Metoda aktualizująca ranking gracza po meczu

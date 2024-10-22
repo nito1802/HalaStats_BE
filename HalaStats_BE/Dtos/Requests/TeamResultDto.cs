@@ -2,8 +2,9 @@
 {
     public class TeamResultDto
     {
-        public List<PlayerDto> Players { get; set; }
+        public string[] PlayerIds { get; set; }
         public int Goals { get; set; }
+        public string TeamName { get; set; }
     }
 
     //TODO: jako wynik zwrócic tez profilowe zawodnika

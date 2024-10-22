@@ -54,6 +54,7 @@ namespace HalaStats_BE
             builder.Services.AddCoreServices();
 
             builder.Services.AddScoped<IMatchService, MatchService>();
+            builder.Services.AddScoped<IPlayerService, PlayerService>();
 
             ConfigureDatabase(builder.Services);
 

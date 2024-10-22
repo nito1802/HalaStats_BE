@@ -1,5 +1,4 @@
-﻿using HalaStats_BE.Database;
-using HalaStats_BE.Database.Entities;
+﻿using HalaStats_BE.Services;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,30 +8,18 @@ namespace HalaStats_BE.Controllers
     [EnableCors("AllowCors"), Route("[controller]")]
     public class MatchScheduleController : Controller
     {
-        private readonly IHalaStatsDbContext _halaStatsDbContext;
+        private readonly IPlayerService _playerService;
 
-        public MatchScheduleController(IHalaStatsDbContext halaStatsDbContext)
+        public MatchScheduleController(IPlayerService playerService)
         {
-            _halaStatsDbContext = halaStatsDbContext;
+            _playerService = playerService;
         }
 
         [HttpPost]
         public async Task<IActionResult> SeedPlayers()
         {
-            List<PlayerEntity> playerEntities =
-            [
-                new()
-                {
-                    Id = "Damian Lis"
-                },
-                new()
-                {
-                    Id = "Marcin Raźny"
-                },
-            ];
-            //TODO: dokonczyć
-
-            throw new NotImplementedException();
+            await _playerService.SeedPlayers();
+            return Ok();
         }
     }
 }

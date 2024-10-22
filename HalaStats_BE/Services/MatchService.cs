@@ -13,7 +13,7 @@ namespace HalaStats_BE.Services
 {
     public interface IMatchService
     {
-        Task<List<MatchResultResponseDto>> GetMatchesHistory(MatchResultDto matchResult);
+        Task<List<MatchResultResponseDto>> GetMatchesHistory();
 
         Task CalculatePlayersRatings(MatchResultDto matchResult);
     }
@@ -29,13 +29,15 @@ namespace HalaStats_BE.Services
             _halaStatsDbContext = halaStatsDbContext;
         }
 
-        public async Task<List<MatchResultResponseDto>> GetMatchesHistory(MatchResultDto matchResult)
+        public async Task<List<MatchResultResponseDto>> GetMatchesHistory()
         {
             var result = await _halaStatsDbContext.Matches.Select(m => new MatchResultResponseDto
             {
                 TeamA = new TeamResultResponseDto
                 {
                     Goals = m.TeamA.Goals,
+                    TeamRating = m.TeamA.TeamRating,
+                    TeamName = m.TeamA.TeamName,
                     Players = m.TeamA.Players.Select(p => new PlayerResponseDto
                     {
                         Id = p.PlayerId,
@@ -46,6 +48,8 @@ namespace HalaStats_BE.Services
                 TeamB = new TeamResultResponseDto
                 {
                     Goals = m.TeamB.Goals,
+                    TeamRating = m.TeamB.TeamRating,
+                    TeamName = m.TeamA.TeamName,
                     Players = m.TeamB.Players.Select(p => new PlayerResponseDto
                     {
                         Id = p.PlayerId,
@@ -64,20 +68,23 @@ namespace HalaStats_BE.Services
         //TODO: Calculate nie powinno zwracać wyniki (tylko być Postem bezwynikowym) wynik zwracać GETem
         public async Task CalculatePlayersRatings(MatchResultDto matchResult)
         {
-            var teamBRating = (int)matchResult.TeamA.Players.Average(p => p.EloRating);
-            var teamARating = (int)matchResult.TeamB.Players.Average(p => p.EloRating);
+            List<PlayerEntity> playerEntitiesTeamA = await MapIdsToPlayerEntities(matchResult.TeamA.PlayerIds);
+            List<PlayerEntity> playerEntitiesTeamB = await MapIdsToPlayerEntities(matchResult.TeamB.PlayerIds);
+
+            var teamBRating = (int)playerEntitiesTeamA.Average(p => p.GetCurrentRating());
+            var teamARating = (int)playerEntitiesTeamB.Average(p => p.GetCurrentRating());
 
             //TODO: dla nieparzystej liczby graczy ustawiac handicup -100 pkt dla zespolu z mniejsza liczba graczy
 
             List<PlayerRatingModel> playerRatingsTeamA = [];
-            foreach (var player in matchResult.TeamA.Players)
+            foreach (var player in playerEntitiesTeamA)
             {
                 var playerMatchResultModel = new PlayerMatchResultModel
                 {
                     Player = new()
                     {
                         Goals = matchResult.TeamA.Goals,
-                        Rating = player.EloRating
+                        Rating = player.GetCurrentRating()
                     },
                     OppositeTeam = new()
                     {
@@ -85,7 +92,7 @@ namespace HalaStats_BE.Services
                         Rating = teamBRating
                     }
                 };
-                var newRating = await UpdatePlayerEntity(player, playerMatchResultModel);
+                var newRating = UpdatePlayerEntity(player, playerMatchResultModel);
                 playerRatingsTeamA.Add(new PlayerRatingModel
                 {
                     PlayerId = player.Id,
@@ -95,22 +102,22 @@ namespace HalaStats_BE.Services
             }
 
             List<PlayerRatingModel> playerRatingsTeamB = [];
-            foreach (var player in matchResult.TeamB.Players)
+            foreach (var player in playerEntitiesTeamB)
             {
                 var playerMatchResultModel = new PlayerMatchResultModel
                 {
                     Player = new()
                     {
                         Goals = matchResult.TeamB.Goals,
-                        Rating = player.EloRating
+                        Rating = player.GetCurrentRating()
                     },
                     OppositeTeam = new()
                     {
                         Goals = matchResult.TeamA.Goals,
-                        Rating = teamBRating
+                        Rating = teamARating
                     }
                 };
-                var newRating = await UpdatePlayerEntity(player, playerMatchResultModel);
+                var newRating = UpdatePlayerEntity(player, playerMatchResultModel);
                 playerRatingsTeamB.Add(new PlayerRatingModel
                 {
                     PlayerId = player.Id,
@@ -119,11 +126,11 @@ namespace HalaStats_BE.Services
                 });
             }
 
-            _halaStatsDbContext.Matches.Add(new MatchEntity
+            var matchEntity = new MatchEntity
             {
                 TeamA = new()
                 {
-                    TeamName = "Team Złoty",
+                    TeamName = matchResult.TeamA.TeamName,
                     Goals = matchResult.TeamA.Goals,
                     TeamRating = teamARating,
                     Players = playerRatingsTeamA.Select(a => new PlayerValueObject
@@ -135,7 +142,7 @@ namespace HalaStats_BE.Services
                 },
                 TeamB = new()
                 {
-                    TeamName = "Team Czarny",
+                    TeamName = matchResult.TeamB.TeamName,
                     Goals = matchResult.TeamB.Goals,
                     TeamRating = teamBRating,
                     Players = playerRatingsTeamB.Select(a => new PlayerValueObject
@@ -148,23 +155,39 @@ namespace HalaStats_BE.Services
                 EventLink = "Link do FEJSA",
                 MatchDate = new DateTime(2024, 10, 10),
                 SkarbnikId = "Damian Lis"
-            });
+            };
 
+            _halaStatsDbContext.Matches.Add(matchEntity);
+            //dodać id meczów do playera
             await _halaStatsDbContext.SaveChangesAsync();
         }
 
-        private async Task<EloPlayerRatingResponseModel> UpdatePlayerEntity(PlayerDto player, PlayerMatchResultModel playerMatchResultModel)
+        private async Task<List<PlayerEntity>> MapIdsToPlayerEntities(string[] playerIds)
+        {
+            var result = new List<PlayerEntity>();
+
+            foreach (var playerId in playerIds)
+            {
+                var playerEntity = await _halaStatsDbContext.Players.Include(a => a.Ratings).FirstOrDefaultAsync(a => a.Id == playerId);
+                if (playerEntity != null)
+                {
+                    result.Add(playerEntity);
+                }
+            }
+
+            return result;
+        }
+
+        private EloPlayerRatingResponseModel UpdatePlayerEntity(PlayerEntity player, PlayerMatchResultModel playerMatchResultModel)
         {
             var newRating = _eloRatingService.UpdateRatings(playerMatchResultModel);
-
-            //zaseedowc tabele Players
 
             var newRatingEntity = new EloRatingEntity
             {
                 Rating = newRating.NewRating
             };
 
-            (await _halaStatsDbContext.Players.FindAsync(player.Id)).Ratings.Add(newRatingEntity);
+            player.Ratings.Add(newRatingEntity);
 
             return newRating;
         }
