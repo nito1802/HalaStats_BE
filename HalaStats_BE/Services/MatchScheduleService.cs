@@ -91,7 +91,9 @@ namespace HalaStats_BE.Services
 
         public async Task<MatchScheduleResponseDto> GetNextMatch()
         {
-            var result = await _halaStatsDbContext.MatchSchedules.OrderBy(a => a.MatchDate).FirstAsync(a => a.MatchDate > DateTime.Now);
+            var result = await _halaStatsDbContext.MatchSchedules
+                .OrderBy(a => a.MatchDate)
+                .FirstAsync(a => a.State != EventState.Cancelled && a.State != EventState.Finished && a.MatchDate > DateTime.Now);
 
             return new MatchScheduleResponseDto
             {
