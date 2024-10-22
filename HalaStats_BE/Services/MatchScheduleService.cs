@@ -85,7 +85,8 @@ namespace HalaStats_BE.Services
             {
                 MatchDate = a.MatchDate,
                 SkarbnikId = a.SkarbnikId,
-                State = a.State
+                State = a.State,
+                EventLink = a.EventLink
             }).ToList();
         }
 
