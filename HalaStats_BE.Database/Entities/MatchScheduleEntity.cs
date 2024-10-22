@@ -17,7 +17,8 @@ namespace HalaStats_BE.Database.Entities
         public string SkarbnikId { get; set; }
         public EventState State { get; set; }
 
-        public MatchTeamValueObject TeamA { get; set; }
-        public MatchTeamValueObject TeamB { get; set; }
+        public MatchTeamValueObject? TeamA { get; set; }
+        public MatchTeamValueObject? TeamB { get; set; }
+        public List<MatchEntity>? Matches { get; set; }
     }
 }

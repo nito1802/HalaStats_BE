@@ -1,20 +1,33 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Collections.Generic;
-using System;
-
-namespace HalaStats_BE.Consts
+﻿namespace HalaStats_BE.Consts
 {
     public static class MatchScheduleConsts
     {
+        public static List<string> Skarbnicy2024To2025 { get; } =
+        [
+            "Damian Lis",
+            "Tomasz Marczyk",
+            "Gerwazy",
+            "Łukasz Hoang",
+            "Damian Rosół",
+            "Piotr Sawicki",
+            "Bartłomiej Bernasik",
+            "Kamil Rosół",
+            "Przemo Mikrut",
+            "Dawid Skalny",
+            "Łukasz Perzyński",
+            "Krzysztof Szczupak",
+            "Pan Janusz"
+        ];
+
         public static List<string> PotentialSkarbnicy { get; } =
         [
             "Bartłomiej Bernasik",
-            //"Damian Lis",
+            "Damian Lis",
             "Damian Rosół",
             "Dawid Skalny",
             "Gerwazy",
             "Kamil Rosół",
-            //"Krzysztof Szczupak",
+            "Krzysztof Szczupak",
             "Łukasz Hoang",
             "Łukasz Perzyński",
             "Pan Janusz",

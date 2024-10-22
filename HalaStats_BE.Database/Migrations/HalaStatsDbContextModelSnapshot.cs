@@ -34,6 +34,9 @@ namespace HalaStats_BE.Database.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("MatchDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
@@ -68,6 +71,9 @@ namespace HalaStats_BE.Database.Migrations
                     b.Property<DateTime>("MatchDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("MatchScheduleId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
@@ -76,6 +82,8 @@ namespace HalaStats_BE.Database.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MatchScheduleId");
 
                     b.ToTable("Matches", "HalaStats");
                 });
@@ -142,6 +150,12 @@ namespace HalaStats_BE.Database.Migrations
 
             modelBuilder.Entity("HalaStats_BE.Database.Entities.MatchEntity", b =>
                 {
+                    b.HasOne("HalaStats_BE.Database.Entities.MatchScheduleEntity", "MatchSchedule")
+                        .WithMany("Matches")
+                        .HasForeignKey("MatchScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.OwnsOne("HalaStats_BE.Database.ValueObjects.MatchTeamValueObject", "TeamA", b1 =>
                         {
                             b1.Property<int>("MatchEntityId")
@@ -261,6 +275,8 @@ namespace HalaStats_BE.Database.Migrations
 
                             b1.Navigation("Players");
                         });
+
+                    b.Navigation("MatchSchedule");
 
                     b.Navigation("TeamA")
                         .IsRequired();
@@ -391,11 +407,14 @@ namespace HalaStats_BE.Database.Migrations
                             b1.Navigation("Players");
                         });
 
-                    b.Navigation("TeamA")
-                        .IsRequired();
+                    b.Navigation("TeamA");
 
-                    b.Navigation("TeamB")
-                        .IsRequired();
+                    b.Navigation("TeamB");
+                });
+
+            modelBuilder.Entity("HalaStats_BE.Database.Entities.MatchScheduleEntity", b =>
+                {
+                    b.Navigation("Matches");
                 });
 
             modelBuilder.Entity("HalaStats_BE.Database.Entities.PlayerEntity", b =>

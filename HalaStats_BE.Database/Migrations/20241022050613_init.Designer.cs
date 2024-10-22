@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HalaStats_BE.Database.Migrations
 {
     [DbContext(typeof(HalaStatsDbContext))]
-    [Migration("20241022031258_init")]
+    [Migration("20241022050613_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -35,6 +35,9 @@ namespace HalaStats_BE.Database.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("MatchDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("ModifiedAt")
@@ -71,6 +74,9 @@ namespace HalaStats_BE.Database.Migrations
                     b.Property<DateTime>("MatchDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("MatchScheduleId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
@@ -79,6 +85,8 @@ namespace HalaStats_BE.Database.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("MatchScheduleId");
 
                     b.ToTable("Matches", "HalaStats");
                 });
@@ -145,6 +153,12 @@ namespace HalaStats_BE.Database.Migrations
 
             modelBuilder.Entity("HalaStats_BE.Database.Entities.MatchEntity", b =>
                 {
+                    b.HasOne("HalaStats_BE.Database.Entities.MatchScheduleEntity", "MatchSchedule")
+                        .WithMany("Matches")
+                        .HasForeignKey("MatchScheduleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.OwnsOne("HalaStats_BE.Database.ValueObjects.MatchTeamValueObject", "TeamA", b1 =>
                         {
                             b1.Property<int>("MatchEntityId")
@@ -265,11 +279,145 @@ namespace HalaStats_BE.Database.Migrations
                             b1.Navigation("Players");
                         });
 
+                    b.Navigation("MatchSchedule");
+
                     b.Navigation("TeamA")
                         .IsRequired();
 
                     b.Navigation("TeamB")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("HalaStats_BE.Database.Entities.MatchScheduleEntity", b =>
+                {
+                    b.OwnsOne("HalaStats_BE.Database.ValueObjects.MatchTeamValueObject", "TeamA", b1 =>
+                        {
+                            b1.Property<int>("MatchScheduleEntityId")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("Goals")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("Handicup")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("HandicupReason")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("TeamName")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<int>("TeamRating")
+                                .HasColumnType("int");
+
+                            b1.HasKey("MatchScheduleEntityId");
+
+                            b1.ToTable("MatchSchedules", "HalaStats");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MatchScheduleEntityId");
+
+                            b1.OwnsMany("HalaStats_BE.Database.ValueObjects.PlayerValueObject", "Players", b2 =>
+                                {
+                                    b2.Property<int>("TeamA_MatchScheduleId")
+                                        .HasColumnType("int");
+
+                                    b2.Property<int>("Id")
+                                        .ValueGeneratedOnAdd()
+                                        .HasColumnType("int");
+
+                                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b2.Property<int>("Id"));
+
+                                    b2.Property<int>("Difference")
+                                        .HasColumnType("int");
+
+                                    b2.Property<string>("PlayerId")
+                                        .IsRequired()
+                                        .HasColumnType("nvarchar(max)");
+
+                                    b2.Property<int>("Rating")
+                                        .HasColumnType("int");
+
+                                    b2.HasKey("TeamA_MatchScheduleId", "Id");
+
+                                    b2.ToTable("MatchSchedules_TeamA_Players", "HalaStats");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("TeamA_MatchScheduleId");
+                                });
+
+                            b1.Navigation("Players");
+                        });
+
+                    b.OwnsOne("HalaStats_BE.Database.ValueObjects.MatchTeamValueObject", "TeamB", b1 =>
+                        {
+                            b1.Property<int>("MatchScheduleEntityId")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("Goals")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("Handicup")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("HandicupReason")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("TeamName")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<int>("TeamRating")
+                                .HasColumnType("int");
+
+                            b1.HasKey("MatchScheduleEntityId");
+
+                            b1.ToTable("MatchSchedules", "HalaStats");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MatchScheduleEntityId");
+
+                            b1.OwnsMany("HalaStats_BE.Database.ValueObjects.PlayerValueObject", "Players", b2 =>
+                                {
+                                    b2.Property<int>("TeamB_MatchScheduleId")
+                                        .HasColumnType("int");
+
+                                    b2.Property<int>("Id")
+                                        .ValueGeneratedOnAdd()
+                                        .HasColumnType("int");
+
+                                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b2.Property<int>("Id"));
+
+                                    b2.Property<int>("Difference")
+                                        .HasColumnType("int");
+
+                                    b2.Property<string>("PlayerId")
+                                        .IsRequired()
+                                        .HasColumnType("nvarchar(max)");
+
+                                    b2.Property<int>("Rating")
+                                        .HasColumnType("int");
+
+                                    b2.HasKey("TeamB_MatchScheduleId", "Id");
+
+                                    b2.ToTable("MatchSchedules_TeamB_Players", "HalaStats");
+
+                                    b2.WithOwner()
+                                        .HasForeignKey("TeamB_MatchScheduleId");
+                                });
+
+                            b1.Navigation("Players");
+                        });
+
+                    b.Navigation("TeamA");
+
+                    b.Navigation("TeamB");
+                });
+
+            modelBuilder.Entity("HalaStats_BE.Database.Entities.MatchScheduleEntity", b =>
+                {
+                    b.Navigation("Matches");
                 });
 
             modelBuilder.Entity("HalaStats_BE.Database.Entities.PlayerEntity", b =>

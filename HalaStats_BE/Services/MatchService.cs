@@ -128,6 +128,8 @@ namespace HalaStats_BE.Services
                 });
             }
 
+            var matchSchedule = await _halaStatsDbContext.MatchSchedules.SingleAsync(a => a.MatchDate == matchResult.MatchDate);
+
             var matchEntity = new MatchEntity
             {
                 TeamA = new()
@@ -156,7 +158,8 @@ namespace HalaStats_BE.Services
                 },
                 EventLink = matchResult.EventLink!,
                 MatchDate = matchResult.MatchDate!.Value,
-                SkarbnikId = matchResult.Skarbnik!
+                SkarbnikId = matchResult.Skarbnik!,
+                MatchScheduleId = matchSchedule.Id
             };
 
             _halaStatsDbContext.Matches.Add(matchEntity);

@@ -10,5 +10,8 @@ namespace HalaStats_BE.Database.Entities
         public MatchTeamValueObject TeamA { get; set; }
         public MatchTeamValueObject TeamB { get; set; }
         public string SkarbnikId { get; set; }
+
+        public int MatchScheduleId { get; set; }
+        public MatchScheduleEntity MatchSchedule { get; set; }
     }
 }

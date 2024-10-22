@@ -84,6 +84,12 @@ namespace HalaStats_BE.Database
                 });
             });
 
+            // Konfiguracja relacji jeden-do-wielu między MatchScheduleEntity a MatchEntity
+            modelBuilder.Entity<MatchEntity>()
+                .HasOne(m => m.MatchSchedule)  // Każdy mecz ma jeden termin
+                .WithMany(s => s.Matches)  // Każdy termin ma wiele meczów
+                .HasForeignKey(m => m.MatchScheduleId);  // Klucz obcy w MatchEntity
+
             base.OnModelCreating(modelBuilder);
 
             /*
