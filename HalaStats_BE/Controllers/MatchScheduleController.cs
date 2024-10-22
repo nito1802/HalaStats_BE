@@ -8,17 +8,18 @@ namespace HalaStats_BE.Controllers
     [EnableCors("AllowCors"), Route("[controller]")]
     public class MatchScheduleController : Controller
     {
-        private readonly IPlayerService _playerService;
+        private readonly IMatchScheduleService _matchScheduleService;
 
-        public MatchScheduleController(IPlayerService playerService)
+        public MatchScheduleController(IMatchScheduleService matchScheduleService)
         {
-            _playerService = playerService;
+            _matchScheduleService = matchScheduleService;
         }
 
         [HttpPost]
+        [Route("seed-schedule")]
         public async Task<IActionResult> SeedPlayers()
         {
-            await _playerService.SeedPlayers();
+            await _matchScheduleService.SeedSchedule();
             return Ok();
         }
     }

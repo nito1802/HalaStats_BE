@@ -2,46 +2,55 @@
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
-            int ratingA = 1500; // Początkowy ranking gracza A
-            int ratingB = 1000; // Początkowy ranking gracza B
+            var dateTimeMy = DateTime.Parse("2024-10-19");
 
-            // Wynik meczu: Gracz A wygrał (1), Gracz B przegrał (0)
-            //new EloRatingService().UpdateRatings(1500, 1500, 2, 1);
-            //new EloRatingService().UpdateRatings(1500, 1500, 4, 1);
-            //new EloRatingService().UpdateRatings(1500, 1500, 6, 1);
-            //new EloRatingService().UpdateRatings(1500, 1500, 20, 1);
+            // Dzisiejsza data
+            DateTime startDate = new DateTime(2024, 10, 16);
 
-            //new EloRatingService().UpdateRatings(1800, 1800, 2, 1);
-            //new EloRatingService().UpdateRatings(1800, 1800, 4, 1);
-            //new EloRatingService().UpdateRatings(1800, 1800, 6, 1);
-            //new EloRatingService().UpdateRatings(1800, 1800, 20, 1);
+            // Data końcowa - koniec marca
+            DateTime endDate = new DateTime(2025, 3, 31);
 
-            //new EloRatingService().UpdateRatings(1500, 1500, 1, 6);
+            // Lista, która przechowa wszystkie soboty
+            List<DateTime> saturdays = GetSaturdaysUntilEndOfMarch(startDate, endDate);
 
-            //new EloRatingService().UpdateRatings(1500, 1000, 15, 1);
-            //new EloRatingService().UpdateRatings(1500, 1000, 1, 15);
+            // Wyświetlenie wszystkich sobót
+            foreach (var saturday in saturdays)
+            {
+                Console.WriteLine(saturday.ToString("yyyy-MM-dd"));
+            }
 
-            //new EloRatingService().UpdateRatings(2000, 1000, 1, 0);
-            //new EloRatingService().UpdateRatings(2000, 1000, 0, 1);
+            var wholeText = string.Join(Environment.NewLine, saturdays.Select(a => a.ToString("yyyy-MM-dd")));
+        }
 
-            //new EloRatingService().UpdateRatings(3000, 1000, 1, 0);
-            //new EloRatingService().UpdateRatings(3000, 1000, 0, 1);
+        // Funkcja zwracająca listę sobót od startDate do endDate
+        private static List<DateTime> GetSaturdaysUntilEndOfMarch(DateTime startDate, DateTime endDate)
+        {
+            List<DateTime> saturdays = new List<DateTime>();
 
-            //new EloRatingService().UpdateRatings(1400, 1000, 1, 0);
-            //new EloRatingService().UpdateRatings(1400, 1000, 0, 1);
+            // Znajdź pierwszą sobotę od startDate
+            DateTime current = GetNextSaturday(startDate);
 
-            //new EloRatingService().UpdateRatings(1100, 1000, 1, 0);
-            //new EloRatingService().UpdateRatings(1100, 1000, 0, 1);
+            // Dodawaj soboty, dopóki nie przekroczysz endDate
+            while (current <= endDate)
+            {
+                saturdays.Add(current);
+                current = current.AddDays(7);  // Przesuń do następnej soboty
+            }
 
-            //new EloRatingService().UpdateRatings(2000, 1900, 1, 0);
-            //new EloRatingService().UpdateRatings(2000, 1900, 0, 1);
+            return saturdays;
+        }
 
-            //Console.WriteLine($"Nowy ranking Gracza A: {ratingA}");
-            //Console.WriteLine($"Nowy ranking Gracza B: {ratingB}");
-
-            Console.WriteLine("Hello, World!");
+        // Funkcja do znalezienia najbliższej soboty od danej daty
+        private static DateTime GetNextSaturday(DateTime date)
+        {
+            int daysUntilSaturday = ((int)DayOfWeek.Saturday - (int)date.DayOfWeek + 7) % 7;
+            if (daysUntilSaturday == 0)
+            {
+                daysUntilSaturday = 7; // Jeśli to sobota, przesuń do następnej
+            }
+            return date.AddDays(daysUntilSaturday);
         }
     }
 }

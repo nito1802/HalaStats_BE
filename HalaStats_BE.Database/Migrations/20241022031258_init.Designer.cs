@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HalaStats_BE.Database.Migrations
 {
     [DbContext(typeof(HalaStatsDbContext))]
-    [Migration("20241022030131_init")]
+    [Migration("20241022031258_init")]
     partial class init
     {
         /// <inheritdoc />

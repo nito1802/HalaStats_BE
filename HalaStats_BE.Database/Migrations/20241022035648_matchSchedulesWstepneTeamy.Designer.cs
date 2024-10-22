@@ -4,6 +4,7 @@ using HalaStats_BE.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HalaStats_BE.Database.Migrations
 {
     [DbContext(typeof(HalaStatsDbContext))]
-    partial class HalaStatsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241022035648_matchSchedulesWstepneTeamy")]
+    partial class matchSchedulesWstepneTeamy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -23,7 +23,11 @@ namespace HalaStats_BE.Services
 
         public async Task<List<PlayerRankResponseDto>> GetPlayersRank()
         {
-            var playersEntitiesToRank = await _halaStatsDbContext.Players.Where(a => a.MatchIds.Count > 0).ToListAsync();
+            var playersEntitiesToRank = (await _halaStatsDbContext.Players
+                .Include(a => a.Ratings)
+                .ToListAsync())
+                .Where(a => a.MatchIds.Any())
+                .ToList();
 
             var playersRank = playersEntitiesToRank.Select(a => new PlayerRankResponseDto
             {
@@ -32,6 +36,8 @@ namespace HalaStats_BE.Services
                 GamesCount = a.MatchIds.Count
             }).OrderByDescending(b => b.EloRating).ThenByDescending(c => c.PlayerName).ToList();
 
+
+            var counterIndex = 1;
             for (int i = 0; i < playersRank.Count; i++)
             {
                 var item = playersRank[i];
@@ -43,7 +49,7 @@ namespace HalaStats_BE.Services
                 }
                 else
                 {
-                    item.Index = i + 1;
+                    item.Index = counterIndex++;
                 }
             }
 

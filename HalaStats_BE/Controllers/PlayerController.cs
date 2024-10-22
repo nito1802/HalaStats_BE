@@ -16,7 +16,7 @@ namespace HalaStats_BE.Controllers
         }
 
         [HttpPost]
-        [Route("seed")]
+        [Route("seed-players")]
         public async Task<IActionResult> SeedPlayers()
         {
             await _playerService.SeedPlayers();

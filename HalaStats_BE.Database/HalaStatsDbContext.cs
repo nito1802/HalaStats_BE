@@ -58,6 +58,32 @@ namespace HalaStats_BE.Database
                 });
             });
 
+            // Konfiguracja dla TeamA w MatchScheduleEntity
+            modelBuilder.Entity<MatchScheduleEntity>(entity =>
+            {
+                entity.OwnsOne(e => e.TeamA, teamA =>
+                {
+                    teamA.OwnsMany(t => t.Players, p =>
+                    {
+                        p.WithOwner().HasForeignKey("TeamA_MatchScheduleId"); // Klucz obcy do MatchScheduleEntity
+                        p.ToTable("MatchSchedules_TeamA_Players");  // Osobna tabela dla graczy TeamA
+                    });
+                });
+            });
+
+            // Konfiguracja dla TeamB w MatchScheduleEntity
+            modelBuilder.Entity<MatchScheduleEntity>(entity =>
+            {
+                entity.OwnsOne(e => e.TeamB, teamB =>
+                {
+                    teamB.OwnsMany(t => t.Players, p =>
+                    {
+                        p.WithOwner().HasForeignKey("TeamB_MatchScheduleId"); // Klucz obcy do MatchScheduleEntity
+                        p.ToTable("MatchSchedules_TeamB_Players");  // Osobna tabela dla graczy TeamB
+                    });
+                });
+            });
+
             base.OnModelCreating(modelBuilder);
 
             /*

@@ -71,8 +71,8 @@ namespace HalaStats_BE.Services
             List<PlayerEntity> playerEntitiesTeamA = await MapIdsToPlayerEntities(matchResult.TeamA.PlayerIds);
             List<PlayerEntity> playerEntitiesTeamB = await MapIdsToPlayerEntities(matchResult.TeamB.PlayerIds);
 
-            var teamBRating = (int)playerEntitiesTeamA.Average(p => p.GetCurrentRating());
-            var teamARating = (int)playerEntitiesTeamB.Average(p => p.GetCurrentRating());
+            var teamARating = (int)playerEntitiesTeamA.Average(p => p.GetCurrentRating());
+            var teamBRating = (int)playerEntitiesTeamB.Average(p => p.GetCurrentRating());
 
             //TODO: dla nieparzystej liczby graczy ustawiac handicup -100 pkt dla zespolu z mniejsza liczba graczy
 
@@ -90,7 +90,8 @@ namespace HalaStats_BE.Services
                     {
                         Goals = matchResult.TeamB.Goals,
                         Rating = teamBRating
-                    }
+                    },
+                    MatchDate = matchResult.MatchDate
                 };
                 var newRating = UpdatePlayerEntity(player, playerMatchResultModel);
                 playerRatingsTeamA.Add(new PlayerRatingModel
@@ -115,7 +116,8 @@ namespace HalaStats_BE.Services
                     {
                         Goals = matchResult.TeamA.Goals,
                         Rating = teamARating
-                    }
+                    },
+                    MatchDate = matchResult.MatchDate
                 };
                 var newRating = UpdatePlayerEntity(player, playerMatchResultModel);
                 playerRatingsTeamB.Add(new PlayerRatingModel
@@ -152,13 +154,23 @@ namespace HalaStats_BE.Services
                         Rating = a.NewRating
                     }).ToList()
                 },
-                EventLink = "Link do FEJSA",
-                MatchDate = new DateTime(2024, 10, 10),
-                SkarbnikId = "Damian Lis"
+                EventLink = matchResult.EventLink!,
+                MatchDate = matchResult.MatchDate!.Value,
+                SkarbnikId = matchResult.Skarbnik!
             };
 
             _halaStatsDbContext.Matches.Add(matchEntity);
-            //dodać id meczów do playera
+
+            await _halaStatsDbContext.SaveChangesAsync();
+
+            foreach (var item in playerEntitiesTeamA)
+            {
+                item.MatchIds.Add(matchEntity.Id);
+            }
+            foreach (var item in playerEntitiesTeamB)
+            {
+                item.MatchIds.Add(matchEntity.Id);
+            }
             await _halaStatsDbContext.SaveChangesAsync();
         }
 
@@ -184,7 +196,8 @@ namespace HalaStats_BE.Services
 
             var newRatingEntity = new EloRatingEntity
             {
-                Rating = newRating.NewRating
+                Rating = newRating.NewRating,
+                MatchDate = playerMatchResultModel.MatchDate!.Value
             };
 
             player.Ratings.Add(newRatingEntity);
