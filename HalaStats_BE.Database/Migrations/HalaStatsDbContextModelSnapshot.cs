@@ -100,7 +100,6 @@ namespace HalaStats_BE.Database.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("EventLink")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("MatchDate")

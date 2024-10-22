@@ -23,6 +23,7 @@ namespace HalaStats_BE.Database.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     MatchDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     SkarbnikId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EventLink = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     State = table.Column<int>(type: "int", nullable: false),
                     TeamA_TeamName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TeamA_Goals = table.Column<int>(type: "int", nullable: true),

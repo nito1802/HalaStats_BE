@@ -4,7 +4,7 @@
     {
         private static void Main()
         {
-            var dateTimeMy = DateTime.Parse("2024-10-19");
+            var dateTimeMy = DateTime.Parse("2024-10-19 20:00");
 
             // Dzisiejsza data
             DateTime startDate = new DateTime(2024, 10, 16);

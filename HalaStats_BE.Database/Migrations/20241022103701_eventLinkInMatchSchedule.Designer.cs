@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HalaStats_BE.Database.Migrations
 {
     [DbContext(typeof(HalaStatsDbContext))]
-    [Migration("20241022050613_init")]
-    partial class init
+    [Migration("20241022103701_eventLinkInMatchSchedule")]
+    partial class eventLinkInMatchSchedule
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,6 +101,9 @@ namespace HalaStats_BE.Database.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("EventLink")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("MatchDate")
                         .HasColumnType("datetime2");

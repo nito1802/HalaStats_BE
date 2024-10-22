@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HalaStats_BE.Database.Migrations
 {
     [DbContext(typeof(HalaStatsDbContext))]
-    [Migration("20241022074548_eventLinkMatchSchedule")]
-    partial class eventLinkMatchSchedule
+    [Migration("20241022103104_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
