@@ -99,7 +99,8 @@ namespace HalaStats_BE.Services
             {
                 MatchDate = result.MatchDate,
                 SkarbnikId = result.SkarbnikId,
-                State = result.State
+                State = result.State,
+                EventLink = result.EventLink
             };
         }
     }

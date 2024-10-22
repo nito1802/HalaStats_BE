@@ -31,7 +31,7 @@ namespace HalaStats_BE.Services
 
         public async Task<List<MatchResultResponseDto>> GetMatchesHistory()
         {
-            var result = await _halaStatsDbContext.Matches.Select(m => new MatchResultResponseDto
+            var result = await _halaStatsDbContext.Matches.OrderByDescending(a => a.MatchDate).Select(m => new MatchResultResponseDto
             {
                 TeamA = new TeamResultResponseDto
                 {
