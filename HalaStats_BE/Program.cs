@@ -2,6 +2,7 @@ using HalaStats_BE.Database;
 using HalaStats_BE.Services;
 using HalaStats_Core;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace HalaStats_BE
 {
@@ -47,7 +48,10 @@ namespace HalaStats_BE
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            }); ;
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 

@@ -3,6 +3,7 @@ using HalaStats_BE.Database;
 using HalaStats_BE.Database.Entities;
 using HalaStats_BE.Dtos.Requests;
 using HalaStats_BE.Dtos.Responses;
+using Microsoft.EntityFrameworkCore;
 
 namespace HalaStats_BE.Services
 {
@@ -10,7 +11,9 @@ namespace HalaStats_BE.Services
     {
         Task SeedSchedule();
 
-        Task<MatchScheduleResponseDto> GetMatchesSchedule();
+        Task<List<MatchScheduleResponseDto>> GetMatchesSchedule();
+
+        Task<MatchScheduleResponseDto> GetNextMatch();
 
         Task SetMatchStatus(MatchScheduleStatusDto matchScheduleStatusDto);
     }
@@ -24,9 +27,24 @@ namespace HalaStats_BE.Services
             _halaStatsDbContext = halaStatsDbContext;
         }
 
-        public Task<MatchScheduleResponseDto> GetMatchesSchedule()
+        public async Task SetMatchStatus(MatchScheduleStatusDto matchScheduleStatusDto)
         {
-            throw new NotImplementedException();
+            var matchSchedule = await _halaStatsDbContext.MatchSchedules.SingleAsync(a => a.MatchDate.Date == matchScheduleStatusDto.MatchDate.Date);
+            matchSchedule.State = matchScheduleStatusDto.State;
+
+            if (matchScheduleStatusDto.State == EventState.Cancelled)
+            {
+                var futureMatches = await _halaStatsDbContext.MatchSchedules.Where(a => a.MatchDate > matchSchedule.MatchDate).ToListAsync();
+                var futureSkarbnicy = futureMatches.Select(a => a.SkarbnikId).ToList();
+
+                futureMatches[0].SkarbnikId = matchSchedule.SkarbnikId;
+                for (var i = 1; i < futureMatches.Count; i++)
+                {
+                    futureMatches[i].SkarbnikId = futureSkarbnicy[i - 1];
+                }
+            }
+
+            await _halaStatsDbContext.SaveChangesAsync();
         }
 
         public async Task SeedSchedule()
@@ -60,9 +78,27 @@ namespace HalaStats_BE.Services
             await _halaStatsDbContext.SaveChangesAsync();
         }
 
-        public Task SetMatchStatus(MatchScheduleStatusDto matchScheduleStatusDto)
+        public async Task<List<MatchScheduleResponseDto>> GetMatchesSchedule()
         {
-            throw new NotImplementedException();
+            var result = await _halaStatsDbContext.MatchSchedules.OrderBy(a => a.MatchDate).ToListAsync();
+            return result.Select(a => new MatchScheduleResponseDto
+            {
+                MatchDate = a.MatchDate,
+                SkarbnikId = a.SkarbnikId,
+                State = a.State
+            }).ToList();
+        }
+
+        public async Task<MatchScheduleResponseDto> GetNextMatch()
+        {
+            var result = await _halaStatsDbContext.MatchSchedules.OrderBy(a => a.MatchDate).FirstAsync(a => a.MatchDate > DateTime.Now);
+
+            return new MatchScheduleResponseDto
+            {
+                MatchDate = result.MatchDate,
+                SkarbnikId = result.SkarbnikId,
+                State = result.State
+            };
         }
     }
 }

@@ -128,7 +128,7 @@ namespace HalaStats_BE.Services
                 });
             }
 
-            var matchSchedule = await _halaStatsDbContext.MatchSchedules.SingleAsync(a => a.MatchDate == matchResult.MatchDate);
+            var matchSchedule = await _halaStatsDbContext.MatchSchedules.SingleAsync(a => a.MatchDate.Date == matchResult.MatchDate!.Value.Date);
 
             var matchEntity = new MatchEntity
             {
